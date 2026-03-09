@@ -10,7 +10,7 @@ This repository contains two complementary analysis pipelines:
 
 1. **`TCGA_MYC_CRC_Pipeline.R`** — A comprehensive R pipeline that downloads and processes TCGA COAD/READ RNA-seq data (STAR counts), performs differential expression, WGCNA co-expression network analysis, GSEA, survival analysis, immune infiltration estimation, and builds a ceRNA regulatory network — all centered on MYC activity in colorectal cancer (CRC).
 
-2. **`ML_XGBoost_SHAP.py`** — A Python machine learning module that trains an XGBoost classifier to predict 3-year mortality using ME4 WGCNA module gene expression, with SHAP-based model explainability.
+2. **`ML_XGBoost_SHAP.py`** — A Python machine learning module that trains an XGBoost classifier to predict 3-year mortality using WGCNA module gene expression, with SHAP-based model explainability.
 
 ---
 
