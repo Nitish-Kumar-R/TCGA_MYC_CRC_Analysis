@@ -96,11 +96,11 @@ This repository contains two complementary analysis pipelines:
 
 ## Requirements
 
-### R (≥ 4.3)
+### R (≥ 4.5)
 
 Dependencies are auto-installed by the pipeline (Section 01). Key packages:
 
-**Bioconductor (v3.19):**
+**Bioconductor (v3.22):**
 - `TCGAbiolinks`, `DESeq2`, `clusterProfiler`, `org.Hs.eg.db`
 - `WGCNA`, `GSVA`, `msigdbr`, `enrichplot`
 - `ComplexHeatmap`, `pheatmap`, `circlize`
