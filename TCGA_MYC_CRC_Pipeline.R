@@ -104,13 +104,14 @@ if (length(missing_cran) > 0) {
 if (!requireNamespace("BiocManager", quietly = TRUE))
   install.packages("BiocManager", quiet = TRUE)
 
-BiocManager::install(version = "3.19", ask = FALSE, update = FALSE)
+BiocManager::install(version = "3.22", ask = FALSE, update = FALSE)
 
 ## ── Bioconductor packages ────────────────────────────────────────────────────
 bioc_pkgs <- c(
   "TCGAbiolinks",
   "SummarizedExperiment",
   "DESeq2",
+  "apeglm",
   "clusterProfiler",
   "org.Hs.eg.db",
   "AnnotationDbi",
