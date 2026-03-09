@@ -359,7 +359,9 @@ query <- GDCquery(
   workflow.type = "STAR - Counts"
 )
 
-GDCdownload(query)
+GDCdownload(query,
+            method = "api",
+            files.per.chunk = 20)
 rna_se  <- GDCprepare(query)
 counts  <- assay(rna_se)
 coldata <- as.data.frame(colData(rna_se))
