@@ -345,30 +345,49 @@ save_go_dotplot <- function(ego_obj, filename, title,
 
 message("[03] Helper functions defined.")
 
-
 ################################################################################
 ## 04. TCGA DOWNLOAD & PREPARATION
 ################################################################################
 
-message("[04] Querying TCGA COAD + READ RNA-seq data …")
+dir.create("data", showWarnings = FALSE)
 
-query <- GDCquery(
-  project       = c("TCGA-COAD", "TCGA-READ"),
-  data.category = "Transcriptome Profiling",
-  data.type     = "Gene Expression Quantification",
-  workflow.type = "STAR - Counts"
-)
+data_file <- "data/tcga_coad_read_rnaseq.rds"
 
-GDCdownload(query,
-            method = "api",
-            files.per.chunk = 20)
-rna_se  <- GDCprepare(query)
+if (file.exists(data_file)) {
+  
+  message("[04] Local TCGA dataset found – loading cached data …")
+  
+  rna_se <- readRDS(data_file)
+  
+} else {
+  
+  message("[04] Querying TCGA COAD + READ RNA-seq data …")
+  
+  query <- GDCquery(
+    project       = c("TCGA-COAD", "TCGA-READ"),
+    data.category = "Transcriptome Profiling",
+    data.type     = "Gene Expression Quantification",
+    workflow.type = "STAR - Counts"
+  )
+  
+  GDCdownload(
+    query,
+    method = "api",
+    files.per.chunk = 20
+  )
+  
+  rna_se <- GDCprepare(query)
+  
+  saveRDS(rna_se, data_file)
+  
+  message("[04] TCGA data downloaded and cached.")
+}
+
 counts  <- assay(rna_se)
 coldata <- as.data.frame(colData(rna_se))
 
 message(sprintf("[04] Raw matrix: %d genes × %d samples",
                 nrow(counts), ncol(counts)))
-
 
 ################################################################################
 ## 05. SAMPLE ANNOTATION & QC
