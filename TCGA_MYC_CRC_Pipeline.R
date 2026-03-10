@@ -1687,12 +1687,90 @@ if (!file.exists(MIRTARBASE_FILE)) {
                   nrow(edges_cerna), nrow(nodes_cerna)))
 }
 
+################################################################################
+## Immune infiltration statistical analysis and visualization (Extras)
+################################################################################
+
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+
+## ── 1. Save immune scores (optional for reproducibility) ─────────────────────
+write.csv(immune_scores, "immune_scores_ssgsea.csv", row.names = TRUE)
+saveRDS(immune_scores, "immune_scores.rds")
+
+## ── 2. Statistical comparison (Wilcoxon test) ─────────────────────────────────
+immune_stats <- immune_scores %>%
+  pivot_longer(
+    cols = -MYC_group,
+    names_to = "Immune_cell",
+    values_to = "Score"
+  ) %>%
+  group_by(Immune_cell) %>%
+  summarise(
+    p_value = wilcox.test(Score ~ MYC_group)$p.value,
+    .groups = "drop"
+  ) %>%
+  mutate(
+    logP = -log10(p_value)
+  ) %>%
+  arrange(logP)
+
+write.csv(immune_stats, "immune_wilcox_results.csv", row.names = FALSE)
+
+## ── 3. Plot immune significance ───────────────────────────────────────────────
+p <- ggplot(
+  immune_stats,
+  aes(
+    x = reorder(Immune_cell, logP),
+    y = logP,
+    fill = logP > -log10(0.05)
+  )
+) +
+  geom_col(width = 0.7, color = "black", linewidth = 0.2) +
+  geom_hline(
+    yintercept = -log10(0.05),
+    linetype = "dashed",
+    color = "black",
+    linewidth = 0.6
+  ) +
+  coord_flip() +
+  scale_fill_manual(
+    values = c("grey70", "#D73027"),
+    guide = "none"
+  ) +
+  theme_bw(base_size = 13) +
+  labs(
+    title = "Immune Cell Differences Between MYC-high and MYC-low CRC Tumors",
+    x = "Immune Cell Type",
+    y = expression(-log[10](p-value))
+  ) +
+  theme(
+    plot.title = element_text(hjust = 0.5, face = "bold", size = 14),
+    axis.text.y = element_text(size = 12),
+    axis.text.x = element_text(size = 11),
+    axis.title = element_text(size = 13),
+    panel.grid.minor = element_blank(),
+    panel.grid.major.y = element_blank(),
+    plot.margin = margin(15, 30, 15, 80)
+  )
+
+## ── 4. Save figure ───────────────────────────────────────────────────────────
+ggsave(
+  "figures/Figure_20_Immune_Significance_MYC.tiff",
+  p,
+  dpi = 600,
+  width = 7.5,
+  height = 5.5,
+  device = "tiff",
+  compression = "lzw"
+)
+
+message("Saved: figures/Figure_20_Immune_Significance_MYC.tiff")
 
 ################################################################################
 message("")
 message("══════════════════════════════════════════════════════════════════════")
 message("  Pipeline complete.")
-message("  Figures : figures/  (Figures 1–19)")
-message("  Tables  : tables/   (Tables 01–12)")
 message("══════════════════════════════════════════════════════════════════════")
 ################################################################################
